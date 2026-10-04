@@ -418,7 +418,7 @@ Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: CustomButton(
                 text: 'ADD TO YOUR CART',
-                svgPath: 'assets/icons/cart.svg',
+                svgPath: 'assets/icons/c.svg',
                 width: double.infinity,
                 onPressed: () {
                   final selectedSizeItem = widget.product.sizes.isNotEmpty
