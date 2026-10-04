@@ -1,6 +1,8 @@
+import 'package:flutter/gestures.dart' show TapGestureRecognizer;
 import 'package:flutter/material.dart';
 import 'package:garrib_app/core/util/colors.dart';
 import 'package:garrib_app/core/util/style.dart';
+import 'package:garrib_app/core/widgets/custom_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _submitLogin() {
     if (_formKey.currentState!.validate()) {
-      // 💡 الانتقال للشاشة الرئيسية عند نجاح الـ Validation
+      
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Logging in...')),
       );
@@ -38,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: AppColors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 33),
           child: Form(
             key: _formKey,
             child: Column(
@@ -46,53 +48,52 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 const SizedBox(height: 16),
                 
-                // 1. زر العودة (Back Button)
-                InkWell(
-                  onTap: () => Navigator.maybePop(context),
-                  borderRadius: BorderRadius.circular(30),
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xF8F8F8F8),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.arrow_back_ios_new,
-                      size: 18,
-                      color: AppColors.black,
-                    ),
-                  ),
-                ),
+                // InkWell(
+                //   onTap: () => Navigator.maybePop(context),
+                //   borderRadius: BorderRadius.circular(30),
+                //   child: Container(
+                //     padding: const EdgeInsets.all(12),
+                //     decoration: BoxDecoration(
+                //       color: const Color.fromARGB(248, 242, 242, 242),
+                //       shape: BoxShape.circle,
+                //       boxShadow: [
+                //         BoxShadow(
+                //           color: Colors.black.withOpacity(0.04),
+                //           blurRadius: 1,
+                //           offset: const Offset(0, 2),
+                //         ),
+                //       ],
+                //     ),
+                //     child: const Icon(
+                //       Icons.arrow_back_ios_new,
+                //       size: 18,
+                //       color: AppColors.black,
+                //     ),
+                //   ),
+                // ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 60),
 
                 Text(
                   'Welcome!',
                   style: AppStyles.heading1.copyWith(
-                    fontSize: 32,
+                    fontSize: 40,
                     fontWeight: FontWeight.bold,
                     color: AppColors.black,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 Text(
                   'We missed having you here',
                   style: AppStyles.bodySmall.copyWith(
-                    fontSize: 16,
+                    fontSize: 20,
                     color: Colors.black45,
                   ),
                 ),
 
-                const SizedBox(height: 36),
+                const SizedBox(height: 45),
 
-                // 3. حقل البريد الإلكتروني (Email Field)
+                
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -113,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 16),
 
-                // 4. حقل كلمة السر (Password Field)
+                
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _isPasswordObscured,
@@ -148,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 12),
 
-                // 5. نسيت كلمة السر (Forget Password)
+                
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -169,46 +170,52 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: 45),
 
-                // 6. زر تسجيل الدخول (Login Button)
+              
                 SizedBox(
-                  width: double.infinity,
-                  height: 54,
-                  child: ElevatedButton(
-                    onPressed: _submitLogin,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.black,
-                      elevation: 4,
-                      shadowColor: Colors.black26,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: Text(
-                      'Login',
-                      style: AppStyles.bodySmall.copyWith(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                  // width: double.infinity,
+                  // height: 54,
+                  // child: ElevatedButton(
+                  //   onPressed: _submitLogin,
+                  //   style: ElevatedButton.styleFrom(
+                  //     backgroundColor: AppColors.black,
+                  //     elevation: 4,
+                  //     shadowColor: Colors.black26,
+                  //     shape: RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(14),
+                  //     ),
+                  //   ),
+                  //   child: Text(
+                  //     'Login',
+                  //     style: AppStyles.bodySmall.copyWith(
+                  //       color: Colors.white,
+                  //       fontSize: 16,
+                  //       fontWeight: FontWeight.bold,
+                  //     ),
+                  //   ),
+                  // ),
+                  child: CustomButton(
+                    text: 'Login',
+                  
+                    width: double.infinity,
+                      onPressed: _submitLogin,
                   ),
                 ),
 
                 const SizedBox(height: 32),
 
-                // 7. فاصل "or" (Divider)
+                
                 Row(
                   children: [
-                    const Expanded(child: Divider(color: Colors.black26, thickness: 0.8)),
+                        const Expanded(child: Divider(color: Color.fromARGB(99, 0, 0, 0), thickness: 0.8)),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
                         'or',
                         style: AppStyles.bodySmall.copyWith(
                           color: Colors.black54,
-                          fontSize: 13,
+                          fontSize: 15,
                         ),
                       ),
                     ),
@@ -218,19 +225,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 28),
 
-                // 8. أزرار التواصل الاجتماعي (Social Buttons)
+              
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildSocialButton(
-                      icon: Icons.g_mobiledata_rounded,
-                      size: 38,
+                      image: 'assets/images/google_icon.png',
+                      size: 50,
                       onTap: () {},
                     ),
                     const SizedBox(width: 32),
                     _buildSocialButton(
-                      icon: Icons.facebook,
-                      size: 26,
+                      image: 'assets/images/facebook_icon.png',
+                      size: 48,
                       onTap: () {},
                     ),
                   ],
@@ -238,31 +245,32 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 48),
 
-                // 9. إنشاء حساب جديد (Register Link)
-                Center(
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: RichText(
-                      text: TextSpan(
-                        text: "Don’t have an account? ",
-                        style: AppStyles.bodySmall.copyWith(
-                          color: AppColors.black,
-                          fontSize: 13,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: 'Register',
-                            style: AppStyles.bodySmall.copyWith(
-                              color: AppColors.terracotta,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+              
+              Center(
+  child: RichText(
+    text: TextSpan(
+      text: "Don’t have an account? ",
+      style: AppStyles.bodySmall.copyWith(
+        color: AppColors.black,
+        fontSize: 15,
+      ),
+      children: [
+        TextSpan(
+          text: 'Register',
+          style: AppStyles.bodySmall.copyWith(
+            color: AppColors.terracotta,
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+          ),
+          recognizer: TapGestureRecognizer()
+            ..onTap = () {
+              Navigator.pushNamed(context, '/register'); 
+            },
+        ),
+      ],
+    ),
+  ),
+),
                 const SizedBox(height: 24),
               ],
             ),
@@ -272,7 +280,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // --- Helper للتحكم بتصميم حقول الإدخال النظيفة ---
   InputDecoration _buildInputDecoration({
     required String hintText,
     Widget? suffixIcon,
@@ -284,7 +291,7 @@ class _LoginScreenState extends State<LoginScreen> {
         fontSize: 14,
       ),
       filled: true,
-      fillColor: const Color(0xF8F8F8F8),
+      fillColor: const Color.fromARGB(248, 241, 241, 241),
       suffixIcon: suffixIcon,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       border: OutlineInputBorder(
@@ -310,9 +317,9 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // --- Helper لأزرار السوشيال ميديا ---
+
   Widget _buildSocialButton({
-    required IconData icon,
+    required String image,
     required double size,
     required VoidCallback onTap,
   }) {
@@ -325,10 +332,10 @@ class _LoginScreenState extends State<LoginScreen> {
           color: Colors.transparent,
           shape: BoxShape.circle,
         ),
-        child: Icon(
-          icon,
-          size: size,
-          color: AppColors.black,
+        child: Image.asset(
+          image,
+          width: size,
+          height: size,
         ),
       ),
     );
