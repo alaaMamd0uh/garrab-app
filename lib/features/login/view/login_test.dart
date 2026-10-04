@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart'; 
 import 'package:flutter/gestures.dart' show TapGestureRecognizer;
 import 'package:flutter/material.dart';
+import 'package:garrib_app/core/services/auth_service.dart';
 import 'package:garrib_app/core/util/colors.dart';
 import 'package:garrib_app/core/util/style.dart';
 import 'package:garrib_app/core/widgets/custom_button.dart';
@@ -16,6 +18,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  final _authService = AuthService();
+
+  bool _isLoading = false;
+
   bool _isPasswordObscured = true;
 
   @override
@@ -25,11 +31,45 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _submitLogin() {
-    if (_formKey.currentState!.validate()) {
-      
+  Future<void> _submitLogin() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+    try {
+      await _authService.login(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      if (!mounted) return;
+      Navigator.pushNamedAndRemoveUntil(context, '/mainlayout', (route) => false);
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Logging in...')),
+        SnackBar(content: Text(AuthService.errorMessage(e))),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _forgotPassword() async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter your email to reset password')),
+      );
+      return;
+    }
+    try {
+      await _authService.resetPassword(email);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password reset link has been sent to your email')),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AuthService.errorMessage(e))),
       );
     }
   }
@@ -46,45 +86,19 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 16),
-                
-                // InkWell(
-                //   onTap: () => Navigator.maybePop(context),
-                //   borderRadius: BorderRadius.circular(30),
-                //   child: Container(
-                //     padding: const EdgeInsets.all(12),
-                //     decoration: BoxDecoration(
-                //       color: const Color.fromARGB(248, 242, 242, 242),
-                //       shape: BoxShape.circle,
-                //       boxShadow: [
-                //         BoxShadow(
-                //           color: Colors.black.withOpacity(0.04),
-                //           blurRadius: 1,
-                //           offset: const Offset(0, 2),
-                //         ),
-                //       ],
-                //     ),
-                //     child: const Icon(
-                //       Icons.arrow_back_ios_new,
-                //       size: 18,
-                //       color: AppColors.black,
-                //     ),
-                //   ),
-                // ),
-
-                const SizedBox(height: 60),
+                const SizedBox(height: 95),
 
                 Text(
                   'Welcome!',
                   style: AppStyles.heading1.copyWith(
-                    fontSize: 40,
+                    fontSize: 35,
                     fontWeight: FontWeight.bold,
                     color: AppColors.black,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'We missed having you here',
+                  '  We missed having you here',
                   style: AppStyles.bodySmall.copyWith(
                     fontSize: 20,
                     color: Colors.black45,
@@ -93,7 +107,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 45),
 
-                
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -114,7 +127,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 16),
 
-                
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _isPasswordObscured,
@@ -149,11 +161,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 12),
 
-                
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {},
+                    // [NEW] Connected to the real reset-password function
+                    onPressed: _forgotPassword,
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,
                       minimumSize: Size.zero,
@@ -172,43 +184,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 45),
 
-              
                 SizedBox(
-                  // width: double.infinity,
-                  // height: 54,
-                  // child: ElevatedButton(
-                  //   onPressed: _submitLogin,
-                  //   style: ElevatedButton.styleFrom(
-                  //     backgroundColor: AppColors.black,
-                  //     elevation: 4,
-                  //     shadowColor: Colors.black26,
-                  //     shape: RoundedRectangleBorder(
-                  //       borderRadius: BorderRadius.circular(14),
-                  //     ),
-                  //   ),
-                  //   child: Text(
-                  //     'Login',
-                  //     style: AppStyles.bodySmall.copyWith(
-                  //       color: Colors.white,
-                  //       fontSize: 16,
-                  //       fontWeight: FontWeight.bold,
-                  //     ),
-                  //   ),
-                  // ),
                   child: CustomButton(
-                    text: 'Login',
-                  
+                    // [NEW] Show loading text and ignore taps while loading
+                    text: _isLoading ? 'Loading...' : 'Login',
                     width: double.infinity,
-                      onPressed: _submitLogin,
+                    onPressed: _isLoading ? () {} : _submitLogin,
                   ),
                 ),
 
                 const SizedBox(height: 32),
 
-                
                 Row(
                   children: [
-                        const Expanded(child: Divider(color: Color.fromARGB(99, 0, 0, 0), thickness: 0.8)),
+                    const Expanded(
+                        child: Divider(
+                            color: Color.fromARGB(99, 0, 0, 0), thickness: 0.8)),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
@@ -219,13 +210,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    const Expanded(child: Divider(color: Colors.black26, thickness: 0.8)),
+                    const Expanded(
+                        child: Divider(color: Colors.black26, thickness: 0.8)),
                   ],
                 ),
 
                 const SizedBox(height: 28),
 
-              
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -245,32 +236,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 48),
 
-              
-              Center(
-  child: RichText(
-    text: TextSpan(
-      text: "Don’t have an account? ",
-      style: AppStyles.bodySmall.copyWith(
-        color: AppColors.black,
-        fontSize: 15,
-      ),
-      children: [
-        TextSpan(
-          text: 'Register',
-          style: AppStyles.bodySmall.copyWith(
-            color: AppColors.terracotta,
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-          ),
-          recognizer: TapGestureRecognizer()
-            ..onTap = () {
-              Navigator.pushNamed(context, '/register'); 
-            },
-        ),
-      ],
-    ),
-  ),
-),
+                Center(
+                  child: RichText(
+                    text: TextSpan(
+                      text: "Don’t have an account? ",
+                      style: AppStyles.bodySmall.copyWith(
+                        color: AppColors.black,
+                        fontSize: 15,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: 'Register',
+                          style: AppStyles.bodySmall.copyWith(
+                            color: AppColors.terracotta,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.pushNamed(context, '/register');
+                            },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 24),
               ],
             ),
@@ -316,7 +306,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
 
   Widget _buildSocialButton({
     required String image,

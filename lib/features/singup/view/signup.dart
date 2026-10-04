@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart'; // [NEW]
 import 'package:flutter/gestures.dart' show TapGestureRecognizer;
 import 'package:flutter/material.dart';
+import 'package:garrib_app/core/services/auth_service.dart'; // [NEW]
 import 'package:garrib_app/core/util/colors.dart';
 import 'package:garrib_app/core/util/style.dart';
 import 'package:garrib_app/core/widgets/custom_button.dart';
@@ -17,6 +19,12 @@ class _SignupScreenState extends State<SignupScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  // [NEW] Service that creates the account in Auth and saves data in Firestore
+  final _authService = AuthService();
+
+  // [NEW] Prevents double taps while the request is running
+  bool _isLoading = false;
+
   bool _isPasswordObscured = true;
 
   @override
@@ -27,11 +35,30 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  void _submitRegister() {
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registering...')),
+  // [NEW] Real registration (replaces the fake "Registering..." snackbar)
+  Future<void> _submitRegister() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+    try {
+      // [NEW] Creates the Auth account + a document in the "users" collection
+      await _authService.register(
+        username: _usernameController.text,
+        email: _emailController.text,
+        password: _passwordController.text,
       );
+      if (!mounted) return;
+      // [NEW] Go to Login and clear all previous screens (Login + Signup)
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      // [NEW] Show a friendly error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AuthService.errorMessage(e))),
+      );
+    } finally {
+      // [NEW] Always stop the loading state
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -49,7 +76,6 @@ class _SignupScreenState extends State<SignupScreen> {
               children: [
                 const SizedBox(height: 16),
 
-              
                 InkWell(
                   onTap: () => Navigator.maybePop(context),
                   borderRadius: BorderRadius.circular(30),
@@ -76,7 +102,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 const SizedBox(height: 40),
 
-            
                 Text(
                   'Hello!',
                   style: AppStyles.heading1.copyWith(
@@ -96,7 +121,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 const SizedBox(height: 35),
 
-            
                 TextFormField(
                   controller: _usernameController,
                   keyboardType: TextInputType.name,
@@ -115,7 +139,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 const SizedBox(height: 16),
 
-              
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -136,7 +159,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 const SizedBox(height: 16),
 
-              
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _isPasswordObscured,
@@ -171,19 +193,18 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 const SizedBox(height: 35),
 
-              
                 SizedBox(
                   width: double.infinity,
                   child: CustomButton(
-                    text: 'Register',
+                    // [NEW] Show loading text and ignore taps while loading
+                    text: _isLoading ? 'Loading...' : 'Register',
                     width: double.infinity,
-                    onPressed: _submitRegister,
+                    onPressed: _isLoading ? () {} : _submitRegister,
                   ),
                 ),
 
                 const SizedBox(height: 32),
 
-            
                 Row(
                   children: [
                     const Expanded(
@@ -206,7 +227,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 const SizedBox(height: 28),
 
-              
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -226,7 +246,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 const SizedBox(height: 48),
 
-              
                 Center(
                   child: RichText(
                     text: TextSpan(

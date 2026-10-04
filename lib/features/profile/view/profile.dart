@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart'; // [NEW]
+import 'package:firebase_auth/firebase_auth.dart'; // [NEW]
 import 'package:flutter/material.dart';
+import 'package:garrib_app/core/services/auth_service.dart'; // [NEW]
 import 'package:garrib_app/core/util/colors.dart';
 import 'package:garrib_app/core/util/style.dart';
 
@@ -12,6 +15,60 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   bool _dropAlertsEnabled = true;
 
+  // [NEW] Current user data (loaded from Auth + Firestore)
+  String _username = '';
+  String _email = '';
+  bool _isLoadingUser = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData(); // [NEW]
+  }
+
+  // [NEW] Loads username and email of the logged-in user
+  Future<void> _loadUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    // Show Auth data immediately as a fallback
+    _email = user.email ?? '';
+    _username = user.displayName ?? '';
+
+    try {
+      // Read the username saved in the "users" collection
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (doc.exists) {
+        final data = doc.data()!;
+        _username = data['username'] ?? _username;
+        _email = data['email'] ?? _email;
+      }
+    } catch (e) {
+      debugPrint('Load user error: $e');
+    }
+
+    if (mounted) setState(() => _isLoadingUser = false);
+  }
+
+  // [NEW] Builds initials like "AM" from the username
+  String _getInitials(String name) {
+    final parts = name.trim().split(RegExp(r'\s+'));
+    if (parts.isEmpty || parts.first.isEmpty) return '?';
+    if (parts.length == 1) return parts.first[0].toUpperCase();
+    return (parts.first[0] + parts.last[0]).toUpperCase();
+  }
+
+  // [NEW] Signs out and goes to Login, clearing all previous screens
+  Future<void> _logout() async {
+    await AuthService().logout();
+    if (!mounted) return;
+    Navigator.of(context, rootNavigator: true)
+        .pushNamedAndRemoveUntil('/login', (route) => false);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -186,46 +243,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Row(
         children: [
 
-          // User Avatar Circle
-          CircleAvatar(
-            radius: 32,
-            backgroundColor: const Color(0xFFEBCAC1), 
-            child: const Text(
-              'AM',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF8A4B38),
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
+        // User Avatar Circle
+CircleAvatar(
+  radius: 32,
+  backgroundColor: const Color(0xFFEBCAC1),
+  child: Text(
+  
+    _getInitials(_username),
+    style: const TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+      color: Color(0xFF8A4B38),
+    ),
+  ),
+),
+const SizedBox(width: 16),
 
-          // User Details
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Alaa Mamdoh',
-                  style: AppStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: AppColors.black,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'alaaMamdouh@gmail.com',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Edit Profile Button
+// User Details
+Expanded(
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+      
+        _isLoadingUser ? '...' : _username,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: AppStyles.bodyMedium.copyWith(
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+          color: AppColors.black,
+        ),
+      ),
+      const SizedBox(height: 2),
+      Text(
+      
+        _isLoadingUser ? '...' : _email,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontSize: 13,
+          color: Colors.grey[600],
+        ),
+      ),
+    ],
+  ),
+),
+        
           _buildCircleIconButton(
             icon: Icons.edit_outlined,
             size: 38,
@@ -431,9 +495,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        onPressed: () {
-          //logout method
-        },
+       onPressed: _logout,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
