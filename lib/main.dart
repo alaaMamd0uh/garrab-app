@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:garrib_app/features/singup/view/signup.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         '/splash': (context) => const SplashScreen(),
         '/onboarding': (context) => const OnboardingScreen(),
         '/login': (context) => const LoginScreen(),
+          '/register': (context) => const SignupScreen(),
         '/mainlayout': (context) => const MainLayout(),
         '/home': (context) =>  HomeScreen(),
         '/cart': (context) => const CartScreen(),
