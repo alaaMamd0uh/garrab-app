@@ -46,7 +46,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   ];
 
   void _navigateToLogin() {
-    Navigator.pushNamed(context, '/home');
+    Navigator.pushNamed(context, '/login');
   }
 
   @override
