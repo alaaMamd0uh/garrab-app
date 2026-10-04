@@ -5,7 +5,7 @@ import 'package:garrib_app/core/util/style.dart';
 import 'package:garrib_app/data/models/product_model.dart';
 import 'package:garrib_app/features/home/view/product_card.dart';
 import 'package:garrib_app/features/product_details/view/product_details_screen.dart';
-import 'package:garrib_app/search/view/search_screen.dart';
+import 'package:garrib_app/features/search/view/search_screen.dart';
 
 class CategoryProductsScreen extends StatelessWidget {
   // UPDATED: categoryName is already here and will be passed to SearchScreen

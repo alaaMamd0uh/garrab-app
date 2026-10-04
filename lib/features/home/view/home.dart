@@ -7,7 +7,8 @@ import 'package:garrib_app/features/category_products/view/category_products_scr
 import 'package:garrib_app/features/home/view/custom_category_card.dart';
 import 'package:garrib_app/features/home/view/product_card.dart';
 import 'package:garrib_app/features/product_details/view/product_details_screen.dart';
-import 'package:garrib_app/search/view/search_screen.dart';
+import 'package:garrib_app/features/search/view/search_screen.dart';
+
 
 class HomeScreen extends StatefulWidget {
   final FirestoreService _firestoreService = FirestoreService();
