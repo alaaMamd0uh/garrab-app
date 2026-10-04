@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:garrib_app/features/profile/view/profile.dart';
+import 'package:garrib_app/features/search/view/search_screen.dart';
 import 'package:garrib_app/providers/cart_provider.dart';
-import 'package:garrib_app/search/view/search_screen.dart';
 import 'package:provider/provider.dart'; 
 import 'package:garrib_app/data/models/product_model.dart';
 import 'package:garrib_app/features/cart/view/cart.dart';
