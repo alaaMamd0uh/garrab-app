@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/mainlayout',
+      initialRoute: '/login',
       debugShowCheckedModeBanner: false,
       routes: {
         '/splash': (context) => const SplashScreen(),
