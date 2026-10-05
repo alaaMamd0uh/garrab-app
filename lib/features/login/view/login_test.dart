@@ -5,6 +5,7 @@ import 'package:garrib_app/core/services/auth_service.dart';
 import 'package:garrib_app/core/util/colors.dart';
 import 'package:garrib_app/core/util/style.dart';
 import 'package:garrib_app/core/widgets/custom_button.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -30,6 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordController.dispose();
     super.dispose();
   }
+  
 
   Future<void> _submitLogin() async {
     if (!_formKey.currentState!.validate()) return;
@@ -52,27 +54,51 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _forgotPassword() async {
-    final email = _emailController.text.trim();
-    if (email.isEmpty) {
+  // [NEW] Google sign in handler
+Future<void> _googleSignIn() async {
+  setState(() => _isLoading = true);
+  try {
+    await _authService.signInWithGoogle();
+    if (!mounted) return;
+    Navigator.pushNamedAndRemoveUntil(context, '/mainlayout', (route) => false);
+  } on GoogleSignInException catch (e) {
+    // User closed the popup -> ignore silently
+    if (e.code != GoogleSignInExceptionCode.canceled && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter your email to reset password')),
-      );
-      return;
-    }
-    try {
-      await _authService.resetPassword(email);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password reset link has been sent to your email')),
-      );
-    } on FirebaseAuthException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AuthService.errorMessage(e))),
+        SnackBar(content: Text('error to sign in ${e.code.name}')),
       );
     }
+  } on FirebaseAuthException catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AuthService.errorMessage(e))),
+    );
+  } finally {
+    if (mounted) setState(() => _isLoading = false);
   }
+}
+
+  // Future<void> _forgotPassword() async {
+  //   final email = _emailController.text.trim();
+  //   if (email.isEmpty) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Please enter your email to reset password')),
+  //     );
+  //     return;
+  //   }
+  //   try {
+  //     await _authService.resetPassword(email);
+  //     if (!mounted) return;
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Password reset link has been sent to your email')),
+  //     );
+  //   } on FirebaseAuthException catch (e) {
+  //     if (!mounted) return;
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text(AuthService.errorMessage(e))),
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -161,32 +187,32 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 12),
 
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    // [NEW] Connected to the real reset-password function
-                    onPressed: _forgotPassword,
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(
-                      'Forget password?',
-                      style: AppStyles.bodySmall.copyWith(
-                        color: AppColors.terracotta,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
+                // Align(
+                //   alignment: Alignment.centerRight,
+                //   child: TextButton(
+                //     // [NEW] Connected to the real reset-password function
+                //     onPressed: _forgotPassword,
+                //     style: TextButton.styleFrom(
+                //       padding: EdgeInsets.zero,
+                //       minimumSize: Size.zero,
+                //       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                //     ),
+                //     child: Text(
+                //       'Forget password?',
+                //       style: AppStyles.bodySmall.copyWith(
+                //         color: AppColors.terracotta,
+                //         fontSize: 13,
+                //         fontWeight: FontWeight.w600,
+                //       ),
+                //     ),
+                //   ),
+                // ),
 
                 const SizedBox(height: 45),
 
                 SizedBox(
                   child: CustomButton(
-                    // [NEW] Show loading text and ignore taps while loading
+                  
                     text: _isLoading ? 'Loading...' : 'Login',
                     width: double.infinity,
                     onPressed: _isLoading ? () {} : _submitLogin,
@@ -223,7 +249,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     _buildSocialButton(
                       image: 'assets/images/google_icon.png',
                       size: 50,
-                      onTap: () {},
+                      onTap: _isLoading ? () {} : _googleSignIn, 
                     ),
                     const SizedBox(width: 32),
                     _buildSocialButton(

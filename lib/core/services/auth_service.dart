@@ -1,9 +1,40 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final _auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
+
+  bool _googleInitialized = false; 
+
+  Future<void> signInWithGoogle() async {
+    if (!_googleInitialized) {
+      await GoogleSignIn.instance.initialize();
+      _googleInitialized = true;
+    }
+
+    final googleUser = await GoogleSignIn.instance.authenticate();
+    final idToken = googleUser.authentication.idToken;
+
+    final credential = GoogleAuthProvider.credential(idToken: idToken);
+    final userCred = await _auth.signInWithCredential(credential);
+
+    await _saveUserIfNew(userCred.user!);
+  }
+
+  // [NEW] Creates the "users" document only the first time
+  Future<void> _saveUserIfNew(User user) async {
+    final doc = _db.collection('users').doc(user.uid);
+    if (!(await doc.get()).exists) {
+      await doc.set({
+        'uid': user.uid,
+        'username': user.displayName ?? '',
+        'email': user.email ?? '',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    }
+  }
 
   Future<void> register({
     required String username,
@@ -18,7 +49,7 @@ class AuthService {
     final user = cred.user!;
     await user.updateDisplayName(username.trim());
 
-    // document id = uid عشان تربط الـ Auth بالـ Firestore
+  
     await _db.collection('users').doc(user.uid).set({
       'uid': user.uid,
       'username': username.trim(),

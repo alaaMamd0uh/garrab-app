@@ -12,7 +12,20 @@
           "package_name": "com.example.garrib_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "149479757401-7eojgqb9eu8b1uhfamn5hf3lodjlm1fg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.garrib_app",
+            "certificate_hash": "7dcaca205494ee9583fc205669e36bd6a5b71597"
+          }
+        },
+        {
+          "client_id": "149479757401-sskom4bmftn0l6nfpt5qhguvu0vonftf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCxdGUwahwBwV15V53KSbuSm7RbA142Rp0"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "149479757401-sskom4bmftn0l6nfpt5qhguvu0vonftf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "149479757401-sp92591u9obrlhkqjsr3uf0f8hp94tnn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.garribApp"
+              }
+            }
+          ]
         }
       }
     }
