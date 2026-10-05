@@ -38,7 +38,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           'Pick sample sizes tailored to your space, skin, or style. Compare options freely in your own environment.',
     ),
     OnboardingModel(
-      image: 'assets/images/o3.png',
+      image: 'assets/images/3.png',
       title: 'Love It? Claim The Full Size',
       description:
           'Track your favorites and purchase certified full sized originals with a single tap, risk-free.',

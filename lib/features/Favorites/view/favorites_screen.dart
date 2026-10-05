@@ -158,7 +158,7 @@ class FavoritesScreen extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(9),
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(color: Colors.grey.shade200),
         ),
         child: Stack(
@@ -173,12 +173,12 @@ class FavoritesScreen extends StatelessWidget {
                     decoration: const BoxDecoration(
                       color: Color(0xFFF7F7F7),
                       borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(16),
+                        top: Radius.circular(18),
                       ),
                     ),
                     child: ClipRRect(
                       borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(16),
+                        top: Radius.circular(18),
                       ),
                       child: imagePath.isNotEmpty
                           ? Image.network(
