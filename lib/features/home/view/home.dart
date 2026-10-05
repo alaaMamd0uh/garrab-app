@@ -55,7 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
 
-          // ================= HEADER =================
 
           Container(
             decoration: BoxDecoration(
@@ -141,14 +140,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // ================= BODY =================
 
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 children: [
 
-                  // ================= BANNER =================
 
                   SizedBox(
                     height: 223,
@@ -241,7 +238,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   const SizedBox(height: 30),
 
-                  // ================= CATEGORIES TITLE =================
 
                   Padding(
                     padding:
@@ -262,7 +258,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   const SizedBox(height: 14),
 
-                  // ================= CATEGORIES =================
 
                   SizedBox(
                     height: 88,
@@ -304,9 +299,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 35),
 
-                  // ================= NEW ARRIVALS TITLE =================
 
                   Padding(
                     padding:
@@ -335,7 +329,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-                  // ================= NEW ARRIVALS PRODUCTS =================
 
                   Padding(
                     padding:

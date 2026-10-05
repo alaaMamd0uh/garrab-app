@@ -49,10 +49,10 @@ class _MainLayoutState extends State<MainLayout> {
         body: IndexedStack(
           index: _currentIndex,
           children: [
-            // Index 0: Home Navigator
+            
             _buildOffstageNavigator(0, _buildHomeNavigator()),
             
-            // Index 1: Cart Screen
+          
             _buildOffstageNavigator(
               1,
               CartScreen(
@@ -70,7 +70,7 @@ class _MainLayoutState extends State<MainLayout> {
               ),
             ),
 
-            // Index 2: Favorites Screen
+            
             _buildOffstageNavigator(
               2,
               FavoritesScreen(
@@ -88,7 +88,7 @@ class _MainLayoutState extends State<MainLayout> {
               ),
             ),
 
-            // Index 3: Profile Screen Navigator
+          
             _buildOffstageNavigator(3, _buildProfileNavigator()), 
           ],
         ),
@@ -139,7 +139,7 @@ class _MainLayoutState extends State<MainLayout> {
     );
   }
 
-  // Profile Navigator
+
   Widget _buildProfileNavigator() {
     return Navigator(
       key: _navigatorKeys[3],
